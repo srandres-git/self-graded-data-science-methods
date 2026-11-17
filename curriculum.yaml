@@ -1,0 +1,193 @@
+# Map of the course: modules → notebooks → sections → concepts → source material.
+# Maintained by the /tutor skill (integrate / build). In exercise lists: ★ challenge, 🔮 prediction,
+# 💬 written answer, 🐞 debug. Exercise ids are permanent (they key the learner's saved work).
+
+course: Self-graded Data Science Methods
+based_on: Métodos Estadísticos y Matemáticos para la Ciencia de Datos (UNAM, 2026)
+# Each module lists its own source material: it can change from module to module.
+# Link repositories at their root (branches and paths inside them may disappear).
+
+modules:
+  - id: m01
+    title: I. Preprocessing and basic data visualization
+    dir: notebooks/m01-preprocessing-visualization
+    sources:
+      - repo: https://github.com/chaffrey8/DMEMCD_2026
+        integrated_through: 2567095   # last commit of that repo whose material is covered
+    notebooks:
+      - id: m01/01
+        file: 01_tables-you-can-trust.ipynb
+        title: Tables you can trust
+        sources: [S03_Notebook_Demostracion_Python §2–5 §8, S03_Notebook_Laboratorio_Estudiante_Python, 01_Lectura_Integracion_Work_Olist §1–3 §6]
+        sections:
+          - title: Reading a CSV
+            concepts: [dtype inference, parse_dates, identifiers as text, key representation across files, usecols/nrows/chunksize]
+            exercises: [dates-as-text 🔮, normalize-zip, zip-coverage, geo-rows-by-state ★]
+          - title: Unit of observation and keys
+            concepts: [unit of observation, key / composite key / foreign key, duplicated vs nunique, customer_id vs customer_unique_id]
+            exercises: [distinct-orders 🔮, is-key, review-duplicates, review-pair-key ★, reviews-unit 💬, customers-vs-people]
+          - title: Joins and cardinality
+            concepts: [how= semantics, cardinality and row-count formula, validate=, indicator=, anti/semi-joins, aggregate-then-join]
+            exercises: [left-join-rows 🔮, inner-join-rows 🔮, many-to-many-rows 🔮, anti-joins, orders-without-items, order-totals ★]
+          - title: Lookup tables and coverage
+            concepts: [dimension tables, two kinds of missing after a join, coalescing, index alignment after merge]
+            exercises: [category-label, untranslated]
+          - title: Invariants
+            concepts: [invariants as code, assert, checked joins]
+            exercises: [debug-duplicate-key 🐞💬, checked-left-join]
+          - title: "Mini-project: an order-level table"
+            concepts: [analytic table, NA is not zero, small groups give extreme summaries]
+            exercises: [order-table, top-state-median ★, small-groups 💬]
+
+      - id: m01/02
+        file: 02_filter-group-derive.ipynb
+        title: Filter, group, derive
+        sources: [S03_Notebook_Demostracion_Python §4 §6 §7, S03_Notebook_Laboratorio_Estudiante_Python, 01_Lectura_Integracion_Work_Olist §4 §5 §7 §8]
+        sections:
+          - title: Boolean masks
+            concepts: [boolean masks, eq/isin/between, operator precedence, index alignment, NaN/NaT comparison semantics]
+            exercises: [mask-precedence 🔮, delivered-2017, debug-alignment 🐞💬, delivered-sp, nat-complement 🔮, delivered-before-approved ★]
+          - title: Grouping
+            concepts: [split-apply-combine, size/count/nunique, groupby dropna, named aggregation, agg vs transform, crosstab normalize, conditional distribution]
+            exercises: [groupby-drops-nan 🔮, size-count-nunique 🔮, category-summary, two-medians, share-of-order ★, top-category-nov-2017 ★, status-share]
+          - title: Dates and derived variables
+            concepts: [Timestamp/Timedelta/Period, .dt accessor, total_seconds vs .days, to_period, structural missingness]
+            exercises: [timedelta-days 🔮, delivery-days, zero-vs-missing 💬]
+          - title: Vectorization
+            concepts: [np.where, np.select, pd.cut, ordered Categorical, loop vs vectorized timing]
+            exercises: [price-band-select, price-band-cut, price-band-loop ★ (open)]
+          - title: Defensive functions
+            concepts: [input validation, specific exceptions, no mutation, bool ⊂ int, numbers.Integral]
+            exercises: [top-categories, bool-trap ★]
+          - title: "Mini-project: delivery times by state"
+            concepts: [derived variable + validated join + transform against a group benchmark]
+            exercises: [slow-vs-state, delivery-interpretation 💬]
+
+      - id: m01/03
+        file: 03_describing-distributions.ipynb
+        title: Describing a distribution
+        sources: [02_EDA_Work_Olist §1 §3 §4 §8, 03_Visualizaciones_Work_Olist §B + Q–Q plot]
+        sections:
+          - title: What kind of variable is it?
+            concepts: [levels of measurement (nominal/ordinal/interval/ratio), summaries allowed per scale, frequency tables, explicit denominators]
+            exercises: [scale-of 🔮, freq-table, status-shares]
+          - title: Center, position and spread
+            concepts: [mean/median as minimizers, breakdown point, linear-interpolation quantiles, variance with n−1, IQR, MAD×1.4826, ddof trap]
+            exercises: [robust-to-typo 🔮, quantile-linear, ddof-ratio 🔮, spread-summary, order-value-spread, breakdown ★, typical-order 💬]
+          - title: "Shape: skewness and the log scale"
+            concepts: [central moments, adjusted Fisher–Pearson skewness, multiplicative processes, log10/log1p, geometric mean]
+            exercises: [skewness ★, log-skew]
+          - title: Seeing a distribution
+            concepts: [histogram counts vs density, bin width, Freedman–Diaconis rule, KDE and bandwidth, ECDF, box plot whiskers (not a CI), violin plot, normal Q–Q plot]
+            exercises: [log-histogram ★, fd-bins ★, kde-below-zero 🔮, ecdf-at-median 🔮, ecdf, qq-points ★]
+          - title: "Unusual values: Tukey's fences"
+            concepts: [Tukey fences k=1.5/3, flag not verdict, scale dependence of outlier rules, NaN in np.percentile]
+            exercises: [tukey-flags, tukey-shares ★, debug-percentile-nan 🐞💬]
+          - title: "Mini-project: how long does delivery take?"
+            concepts: [population definition, robust summary, grouped box plots sorted by median, ECDF comparison]
+            exercises: [delivery-summary, delivery-boxplot, delivery-report 💬, ecdf-compare ★ (open)]
+
+      - id: m01/04
+        file: 04_comparing-and-relating.ipynb
+        title: Comparing groups, relating variables
+        sources: [02_EDA_Work_Olist §5–7 §9, 03_Visualizaciones_Work_Olist §C–E, S03_Notebook_Demostracion_Python (late deliveries vs reviews)]
+        sections:
+          - title: Conditional distributions
+            concepts: [marginal vs conditional distribution, contingency tables, crosstab normalize, group sizes]
+            exercises: [normalize-direction 🔮, state-delivery-summary]
+          - title: Small groups are noisy
+            concepts: [variance of the mean, standard error, extremes from small groups, funnel plot]
+            exercises: [extremes-small 🔮, funnel-plot ★]
+          - title: "Time: calendars, partial periods, censoring"
+            concepts: [coverage, partial periods, calendar gaps/reindex, denominators, cumulative curves, right-censoring]
+            exercises: [monthly-orders, debug-month 🐞💬, delivered-rate-by-month ★, recent-months 💬]
+          - title: Covariance and correlation
+            concepts: [covariance, Pearson r as cosine, Cauchy–Schwarz, Spearman rho, average ranks, influential points, correlation vs causation]
+            exercises: [influential-point 🔮, pearson-by-hand, spearman-by-hand, monotone-not-linear 🔮, price-freight-corr]
+          - title: Seeing relationships
+            concepts: [overplotting, alpha, reproducible sampling, hexbin/hist2d, jitter, small multiples, correlation heatmap (demo; built in 05)]
+            exercises: [jitter-plot]
+          - title: Confounding and Simpson's paradox
+            concepts: [confounder, stratification, Simpson's paradox as weighted averages, direct standardization]
+            exercises: [simpson-overall 🔮, stratified-rates, standardize ★]
+          - title: "Mini-project: late deliveries and reviews"
+            concepts: [population definition, deduplication decision, validated joins, rank correlation, stratified check]
+            exercises: [late-share, reviews-one, late-vs-on-time, confounders 💬, delay-score-spearman, gap-within-states ★, gap-conclusion 💬, explore ★ (open)]
+
+      - id: m01/05
+        file: 05_honest-charts.ipynb
+        title: Honest charts
+        sources: [03_Visualizaciones_Work_Olist §A §G §H, "Cleveland & McGill (1984), Graphical Perception", "Wilke, Fundamentals of Data Visualization"]
+        sections:
+          - title: Figures and Axes
+            concepts: [Figure vs Axes, plt.subplots, object-oriented API, chart functions that take and return ax]
+            exercises: [axes-shape 🔮, sorted-bars]
+          - title: How we read charts
+            concepts: [ranking of visual encodings, zero baselines for bars, bar chart vs histogram, sorting nominal vs keeping ordinal order, rates vs counts]
+            exercises: [truncated-ratio 🔮, sorted-barh, fixed-state-chart 🐞, fixed-state-why 💬]
+          - title: Parts of a whole
+            concepts: [grouped vs stacked vs 100% stacked, pie critique, dot and lollipop plots, marginal/conditional/joint shares, mosaic plot]
+            exercises: [stacked-baseline 🔮, composition-chart, dot-plot, mosaic-area 🔮, mosaic ★]
+          - title: Color
+            concepts: [sequential/diverging/qualitative palettes, centering diverging maps, color vision deficiency, relative luminance, rainbow critique]
+            exercises: [palette-type 🔮, corr-heatmap, deviation-bars ★, luminance-monotone ★]
+          - title: Labels, annotations, export
+            concepts: [titles that state the finding, units, population and denominator, direct labels, figsize × dpi, raster vs vector]
+            exercises: [export-size ★]
+          - title: "Mini-project: when do customers shop?"
+            concepts: [day-of-week × hour heatmap, reindex to a full grid, sequential map for counts, writing a caption]
+            exercises: [purchase-heatmap, heatmap-caption 💬, heatmap-open ★ (open)]
+
+      - id: m01/06
+        file: 06_missing-data.ipynb
+        title: Missing data
+        sources: [04_Limpieza_Transformacion_Work_Olist §2–4, 03_Visualizaciones_Work_Olist §E (missingness map), S03_Notebook_Demostracion_Python §5]
+        sections:
+          - title: How pandas represents missing
+            concepts: [NaN vs None vs pd.NA vs NaT, skipna and min_count, NaN comparisons, merge matches NaN keys, nullable dtypes]
+            exercises: [missing-semantics 🔮, merge-nan-keys 🔮, nullable-int]
+          - title: Profiling missingness
+            concepts: [missingness profile, conditional profile, structural vs unknown gaps, co-missingness, missingness indicator matrix]
+            exercises: [missing-profile, missing-by-status, status-date-audit ★, missing-together]
+          - title: Mechanisms (MCAR, MAR, MNAR)
+            concepts: [P(R | Y_obs, Y_mis), MCAR, MAR, MNAR, evidence against MCAR, MAR vs MNAR untestable from data]
+            exercises: [unknown-share ★, mcar-evidence 💬]
+          - title: Complete-case analysis
+            concepts: [listwise vs pairwise deletion, (1-p)^k complete rows, bias under MAR/MNAR]
+            exercises: [complete-rows 🔮, listwise-loss, mnar-bias ★]
+          - title: Single imputation and its cost
+            concepts: [global vs group median, transform alignment, missing-value indicator, mode vs explicit level, variance shrinkage, leakage note]
+            exercises: [variance-shrink 🔮, debug-fillna-alignment 🐞💬, impute-group-median, shrinkage-check, mode-inflation ★]
+          - title: "Mini-project: who writes a comment?"
+            concepts: [selection by an observed variable, complete-case bias, inverse probability weighting]
+            exercises: [comment-who 🔮, comment-by-score, cc-bias, ipw-days ★, comments-mechanism 💬]
+
+      - id: m01/07
+        file: 07_cleaning-transforming-features.ipynb
+        title: Cleaning, transforming, features
+        sources: [04_Limpieza_Transformacion_Work_Olist §1 §5–12, S03_Notebook_Demostracion_Python §9 (reproducibility)]
+        sections:
+          - title: Validity audits
+            concepts: [data-quality dimensions, rules as code, error vs plausible extreme, NaT inside rules, flag don't delete]
+            exercises: [nat-violation 🔮, audit-table, event-order ★, error-or-outlier 💬]
+          - title: "Outliers: flag, clip, winsorize"
+            concepts: [trimming vs clipping vs winsorizing, why the mean moves and the median doesn't, sensitivity scenarios]
+            exercises: [clip-mean 🔮, winsorize, winsor-sensitivity]
+          - title: Scaling and logs
+            concepts: [min-max, z-score, robust scaling, zero denominators, log/log1p, skewness]
+            exercises: [scalers, robust-scale ★, log-skew 🔮]
+          - title: Discretization
+            concepts: [cut vs qcut, equal-frequency bins, ties and duplicates='drop']
+            exercises: [qcut-ties 🔮, quartile-bins]
+          - title: Encoding
+            concepts: [nominal vs ordinal, one-hot, dummy-variable trap (rank of the design matrix), reference category, ordinal codes]
+            exercises: [dummy-rank 🔮, one-hot, ordinal-codes ★]
+          - title: Features and leakage
+            concepts: [ratios with safe denominators, train/test split, fitted preprocessing parameters, data leakage]
+            exercises: [freight-ratio, leakage-gap ★]
+          - title: Pipelines and provenance
+            concepts: [non-mutating pipelines, decision log, SHA-256 fingerprint, environment stamp]
+            exercises: [debug-mutation 🐞💬, data-fingerprint]
+          - title: "Mini-project: a cleaning pipeline"
+            concepts: [flags and indicators, Tukey fences on log scale, decision log]
+            exercises: [clean-orders, pipeline-decisions 💬, outlier-policy ★ (open)]
