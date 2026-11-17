@@ -1,0 +1,3 @@
+# Keep notebooks and sources with LF endings on every OS (clean diffs, stable build hashes)
+* text=auto eol=lf
+*.ipynb text eol=lf

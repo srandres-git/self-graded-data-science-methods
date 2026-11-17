@@ -1,0 +1,24 @@
+# Your solutions and progress: never committed
+workspace/
+
+# Downloaded datasets (fetched automatically on first use)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings (the tutor skill itself IS committed)
+.claude/settings.local.json
