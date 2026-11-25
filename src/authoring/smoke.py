@@ -21,6 +21,8 @@ from pathlib import Path
 os.environ.setdefault("SELFGRADE_NO_LOG", "1")
 os.environ.setdefault("SELFGRADE_NO_GUARD", "1")
 os.environ.setdefault("MPLBACKEND", "Agg")
+# On Windows the console may be cp1252, which can't print the notebooks' emoji.
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 
 def load_reference(ref_path: Path) -> dict:
