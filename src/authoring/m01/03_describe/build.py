@@ -101,16 +101,20 @@ nb.code(r"""
 freq_table(orders["order_status"]).round(4)
 """)
 nb.md(r"""
-✍️ **1.3** Same cancellations, two denominators. Compute:
-- `share_delivered`: the share of **all** orders with status `delivered`
+✍️ **1.3** Same cancellations, two denominators. Both shares count the **same** orders, the ones with status `canceled`; only the population you divide by changes. Compute:
+- `share_canceled_of_all`: among **all** orders, the share with status `canceled`
 - `share_canceled_of_undelivered`: among orders that are **not** delivered, the share with status `canceled`
 """)
 nb.learner("status-shares", r"""
-share_delivered = ...
+share_canceled_of_all = ...
 share_canceled_of_undelivered = ...
 
-check("status-shares", share_delivered, share_canceled_of_undelivered)
+check("status-shares", share_canceled_of_all, share_canceled_of_undelivered)
 """)
+nb.md(r"""
+💬 **1.4** An operations manager asks: *"When an order doesn't reach the customer, how often is it because it was canceled?"* Which of the two shares answers that question, and what would the other one answer instead?
+""")
+nb.answer("status-shares-which")
 
 # ---------------------------------------------------------------------------
 nb.md(r"""

@@ -70,7 +70,7 @@ modules:
         sections:
           - title: What kind of variable is it?
             concepts: [levels of measurement (nominal/ordinal/interval/ratio), summaries allowed per scale, frequency tables, explicit denominators]
-            exercises: [scale-of 🔮, freq-table, status-shares]
+            exercises: [scale-of 🔮, freq-table, status-shares, status-shares-which 💬]
           - title: Center, position and spread
             concepts: [mean/median as minimizers, breakdown point, linear-interpolation quantiles, variance with n−1, IQR, MAD×1.4826, ddof trap]
             exercises: [robust-to-typo 🔮, quantile-linear, ddof-ratio 🔮, spread-summary, order-value-spread, breakdown ★, typical-order 💬]
