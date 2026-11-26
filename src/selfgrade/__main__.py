@@ -2,11 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import sys
 
 from . import data, workspace
 
 
 def main(argv=None) -> None:
+    # The Windows console may be cp1252, which can't print the emoji in the status lines.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(prog="python -m selfgrade", description=__doc__)
     sub = ap.add_subparsers(dest="cmd")
     up = sub.add_parser("update", help="copy new notebooks into workspace/ and refresh the ones you started")
