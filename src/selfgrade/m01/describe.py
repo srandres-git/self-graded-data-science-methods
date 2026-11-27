@@ -174,6 +174,12 @@ S.prediction("ddof-ratio", 0.926,
     "np.std divides by n, pandas by n−1, so the ratio is √((n−1)/n) = √(6/7) ≈ 0.926, whatever the data. "
     "The gap is noticeable for small n and vanishes as n grows.",
     compare=lambda v, a: isinstance(v, (int, float, np.floating)) and abs(float(v) - 0.92582) < 0.002)
+S.prediction("logspace-edges", [1.0, 10.0, 100.0, 1000.0],
+    "np.logspace's first two arguments are exponents of 10: it returns 10⁰, 10¹, 10², 10³. Consecutive values have "
+    "the same ratio (×10), so the gaps look equal on a log axis. For data from lo to hi, pass np.log10(lo) and "
+    "np.log10(hi), or use np.geomspace(lo, hi, k), which takes the values themselves.",
+    compare=lambda v, a: isinstance(v, (list, tuple, np.ndarray)) and len(v) == 4
+    and all(isinstance(x, (int, float, np.number)) for x in v) and np.allclose(np.asarray(v, dtype=float), a))
 S.prediction("ecdf-at-median", 0.571,
     "F̂(4) counts the values ≤ 4: 2, 3, 3, 4, so 4 of 7 ≈ 0.571. With a finite sample the ECDF jumps at each value, "
     "so at the median it is ≥ 0.5, not exactly 0.5.",

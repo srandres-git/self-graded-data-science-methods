@@ -78,8 +78,8 @@ modules:
             concepts: [central moments, adjusted Fisher–Pearson skewness, multiplicative processes, log10/log1p, geometric mean]
             exercises: [skewness ★, log-skew]
           - title: Seeing a distribution
-            concepts: [histogram counts vs density, bin width, Freedman–Diaconis rule, KDE and bandwidth, ECDF, box plot whiskers (not a CI), violin plot, normal Q–Q plot]
-            exercises: [log-histogram ★, fd-bins ★, kde-below-zero 🔮, ecdf-at-median 🔮, ecdf, qq-points ★]
+            concepts: [matplotlib Figure/Axes and ax.hist bins (count vs edges), linspace vs geomspace/logspace edges, histogram counts vs density, bin width, Freedman–Diaconis rule, KDE and bandwidth, ECDF, box plot whiskers (not a CI), violin plot, normal Q–Q plot]
+            exercises: [logspace-edges 🔮, log-histogram ★, fd-bins ★, kde-below-zero 🔮, ecdf-at-median 🔮, ecdf, qq-points ★]
           - title: "Unusual values: Tukey's fences"
             concepts: [Tukey fences k=1.5/3, flag not verdict, scale dependence of outlier rules, NaN in np.percentile]
             exercises: [tukey-flags, tukey-shares ★, debug-percentile-nan 🐞💬]

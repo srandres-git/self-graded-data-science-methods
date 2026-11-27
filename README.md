@@ -118,3 +118,4 @@ With [Claude Code](https://claude.com/claude-code), the `/tutor` skill in this r
 ## Changelog
 
 - **2026-11 · v0.1:** Module I (7 notebooks), the `selfgrade` package, `update`/`reset`/`fetch-data`.
+- **2026-11 · m01/03:** §4 now explains the matplotlib basics the plotting exercises need (Figure vs Axes, `ax.hist` bins, log axes, `ax.boxplot`), plus a new 🔮 on `np.logspace`. Exercises 4.1–4.6 are renumbered 4.2–4.7; no answers are lost. Run `python -m selfgrade update`.
