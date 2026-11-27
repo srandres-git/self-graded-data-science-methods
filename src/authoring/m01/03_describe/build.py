@@ -288,21 +288,58 @@ A **histogram** splits the range into intervals (*bins*) and draws a bar per bin
 - A density is not a probability: it can exceed 1. Probabilities are *areas* under it.
 - The bin width is a choice, and it changes the picture. Narrow bins are noisy; wide bins hide detail.
 - The **Freedman–Diaconis rule** picks the width $h=2\cdot\text{IQR}\cdot n^{-1/3}$. It's robust (it uses the IQR rather than the std), and it shrinks slowly as $n$ grows, so more data buys more detail.
+
+> 🧰 **How the code works: drawing with matplotlib** (the full picture comes in Notebook 05)
+> - A **Figure** is the whole image. An **Axes** is one plotting panel inside it, with its own x and y axis, labels and title. `fig, ax = plt.subplots(figsize=(8, 3.5))` creates a Figure with one Axes (`figsize` is width × height in inches). `fig, axes = plt.subplots(1, 2)` creates two side by side, and `axes` is an array of them.
+> - You draw by calling methods **on the Axes**: `ax.hist(...)`, `ax.boxplot(...)`, `ax.plot(...)`.
+> - `ax.hist(x, bins=b)`: if `b` is an **integer**, matplotlib splits the range from `x.min()` to `x.max()` into `b` bins of equal width. If `b` is an **array**, its values are the bin **edges**: $k$ bins need $k+1$ edges, and the widths can differ. It returns `(counts, edges, bars)`, which you rarely need.
+> - `ax.set_xscale("log")` spaces the x axis by ratios, so 10 → 100 → 1,000 are equally far apart. It changes how the axis is drawn, not the bins.
+> - `ax.set(xlabel=..., ylabel=..., title=...)` sets several labels in one call. `ax.set_xlabel(...)` and `ax.set_title(...)` do the same one at a time.
+> - The plotting exercises are functions that **return `ax`**. `check()` inspects that object (the number of bars, their edges, the axis scale, the labels) rather than the pixels.
+
+> ✅ **Good practice:** label every axis with what it measures and its unit, and say so in the label when an axis is on a log scale.
+
+The cell below is the pattern every plotting exercise follows: create the Axes, draw on it, label it.
 """)
 nb.code(r"""
 price = items["price"]
 view = price[price <= price.quantile(.99)]   # truncating the VIEW to the 99th percentile; the data are unchanged
-fig, axes = plt.subplots(1, 2, figsize=(11, 3.5), sharey=False)
-for ax, bins in zip(axes, (10, 80)):
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.5))   # one Figure, two Axes side by side
+for ax, bins in zip(axes, (10, 80)):                # same data, two numbers of bins
+    # an integer `bins` gives bins of equal width, in BRL, from the minimum to the maximum
     ax.hist(view, bins=bins, color="#4C72B0", edgecolor="white", linewidth=0.3)
     ax.set(title=f"Item price ≤ P99, {bins} bins", xlabel="price (BRL)", ylabel="item rows")
-plt.tight_layout(); plt.show()
+plt.tight_layout(); plt.show()                      # tidy the spacing between panels, then display
 """)
 nb.md(r"""
-★ **4.1** Write `log_histogram(prices, n_bins)`. It draws a histogram of the prices with **`n_bins` bins of equal width on the log scale**, from the minimum to the maximum price. It sets the x axis to a log scale, labels both axes (the x label mentions BRL), and returns the matplotlib `Axes`.
+### Bins of equal width on the log scale
+On a log axis, bins of equal width in BRL look wrong: the bins at the left are wide and the bins at the right are squeezed together. What should be equal on a log scale is the **ratio** between consecutive edges (§3), as in 1, 10, 100, 1,000.
+
+> 🧰 **How the code works**
+> - `np.linspace(a, b, k)` returns $k$ numbers from `a` to `b` with **equal differences**.
+> - `np.geomspace(a, b, k)` returns $k$ numbers from `a` to `b` with **equal ratios**.
+> - `np.logspace(a, b, k)` does the same, but ⚠️ `a` and `b` are **exponents**: it goes from $10^a$ to $10^b$. For data running from `lo` to `hi`, write `np.logspace(np.log10(lo), np.log10(hi), k)`, or simply `np.geomspace(lo, hi, k)`.
+
+🔮 **4.1** What does `np.logspace(0, 3, 4)` return? Answer as a list of 4 numbers.
+""")
+nb.learner("logspace-edges", r"""
+predict("logspace-edges", ...)
+""")
+nb.code(r"""
+lo, hi = 1.0, 1000.0
+print("linspace :", np.linspace(lo, hi, 4))                         # equal differences: 1, 334, 667, 1000
+print("geomspace:", np.geomspace(lo, hi, 4))                        # equal ratios (×10 each step)
+print("logspace :", np.logspace(np.log10(lo), np.log10(hi), 4))     # the same edges, given as exponents
+""")
+nb.md(r"""
+★ **4.2** Write `log_histogram(prices, n_bins)`. It draws a histogram of the prices with **`n_bins` bins of equal width on the log scale**, from the minimum to the maximum price. Build the `n_bins + 1` edges yourself and pass them to `ax.hist`: an integer `bins` would give bins of equal width in BRL instead. Then set the x axis to a log scale, label both axes (the x label mentions BRL), and return the `Axes`.
 """)
 nb.learner("log-histogram", r"""
 def log_histogram(prices: pd.Series, n_bins: int = 40):
+    \"\"\"Histogram of the prices on n_bins bins of equal log-width from min to max, with a log x axis.
+
+    Labels both axes and returns the matplotlib Axes.
+    \"\"\"
     # your code here
     raise NotImplementedError
 
@@ -310,7 +347,7 @@ def log_histogram(prices: pd.Series, n_bins: int = 40):
 check("log-histogram", log_histogram)
 """)
 nb.md(r"""
-★ **4.2** Write `fd_width(x)` (the Freedman–Diaconis width, ignoring missing values). Then compute `fd_bins_price`, the number of bins it implies for `items["price"]`: $\lceil(\max-\min)/h\rceil$.
+★ **4.3** Write `fd_width(x)` (the Freedman–Diaconis width, ignoring missing values). Then compute `fd_bins_price`, the number of bins it implies for `items["price"]`: $\lceil(\max-\min)/h\rceil$.
 """)
 nb.learner("fd-bins", r"""
 def fd_width(x: pd.Series) -> float:
@@ -333,7 +370,7 @@ $$\hat f_h(x)=\frac{1}{n\,h}\sum_{i=1}^{n}K\!\left(\frac{x-x_i}{h}\right),\qquad
 - SciPy's `gaussian_kde` picks $h$ by *Scott's rule*, about $\hat\sigma\,n^{-1/5}$, which is ideal for roughly normal data and too wide for skewed or multi-peaked data.
 - Each kernel integrates to 1, and the $\frac{1}{nh}$ factor makes the whole curve integrate to 1.
 
-🔮 **4.3** Fit a Gaussian KDE to item prices (all positive). Does the estimated density put any probability on **negative** prices? Answer `"yes"` or `"no"`.
+🔮 **4.4** Fit a Gaussian KDE to item prices (all positive). Does the estimated density put any probability on **negative** prices? Answer `"yes"` or `"no"`.
 """)
 nb.learner("kde-below-zero", r"""
 predict("kde-below-zero", ...)
@@ -364,13 +401,13 @@ $$\hat F(x)=\frac{\#\{i:\ x_i\le x\}}{n}.$$
 - Quantiles can be read straight off it: $Q(p)$ is (about) where the curve crosses height $p$.
 - Overlaying ECDFs is one of the best ways to compare groups.
 
-🔮 **4.4** For the toy `days` $=[2,3,3,4,5,6,30]$, what is $\hat F(4)$, the ECDF at the median? Three decimals.
+🔮 **4.5** For the toy `days` $=[2,3,3,4,5,6,30]$, what is $\hat F(4)$, the ECDF at the median? Three decimals.
 """)
 nb.learner("ecdf-at-median", r"""
 predict("ecdf-at-median", ...)
 """)
 nb.md(r"""
-✍️ **4.5** Write `ecdf(x)`. It returns two arrays `(xs, ys)`: the **distinct** non-missing values in increasing order, and $\hat F$ at each of them. Missing values are excluded from $n$.
+✍️ **4.6** Write `ecdf(x)`. It returns two arrays `(xs, ys)`: the **distinct** non-missing values in increasing order, and $\hat F$ at each of them. Missing values are excluded from $n$.
 """)
 nb.learner("ecdf", r"""
 def ecdf(x: pd.Series) -> tuple[np.ndarray, np.ndarray]:
@@ -401,6 +438,8 @@ A **box plot** draws:
 It compresses a distribution into five numbers, which makes it good for comparing many groups side by side. ⚠️ The whiskers show where the **data** lie. They are not a confidence interval, and say nothing about how precisely the median is known.
 
 A **violin plot** mirrors a KDE on both sides of an axis. It shows what a box hides, such as two peaks, at the cost of a bandwidth choice.
+
+> 🧰 **How the code works:** `ax.boxplot(groups, tick_labels=names, showfliers=False)` takes a **list of arrays**, one per group, and draws one box per array **in the order of the list**, at x positions 1, 2, 3, …. `tick_labels` names the boxes (before matplotlib 3.9 the argument was called `labels=`), and `showfliers=False` hides the individual points beyond the whiskers. To order the boxes, for example by median, sort the list before you pass it. `ax.violinplot(groups)` takes the same list, but has no `tick_labels`, so the cell below sets the tick labels with `ax.set_xticks`.
 """)
 nb.code(r"""
 groups = order_table.dropna(subset=["items_value"]).assign(
@@ -426,7 +465,7 @@ A **quantile–quantile** (Q–Q) plot compares the sample's quantiles with thos
 
 It's a *diagnostic*: with 100,000 points, every real variable "fails" a strict normality test, so ask whether the departure matters for what you'll do next.
 
-★ **4.6** Write `qq_points(x)`. It returns `(theoretical, sample)` arrays: $\Phi^{-1}(p_i)$ with $p_i=(i-0.5)/n$, and the sorted non-missing values. (`scipy.stats.norm.ppf` is $\Phi^{-1}$.)
+★ **4.7** Write `qq_points(x)`. It returns `(theoretical, sample)` arrays: $\Phi^{-1}(p_i)$ with $p_i=(i-0.5)/n$, and the sorted non-missing values. (`scipy.stats.norm.ppf` is $\Phi^{-1}$.)
 """)
 nb.learner("qq-points", r"""
 def qq_points(x: pd.Series) -> tuple[np.ndarray, np.ndarray]:
