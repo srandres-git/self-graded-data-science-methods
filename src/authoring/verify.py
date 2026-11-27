@@ -24,6 +24,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path[:0] = [str(HERE), str(ROOT / "src")]
 os.environ.update(SELFGRADE_NO_LOG="1", SELFGRADE_NO_GUARD="1", MPLBACKEND="Agg", PYTHONIOENCODING="utf-8")
+# PYTHONIOENCODING only reaches the subprocesses; our own console may be cp1252 on Windows (no emoji).
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from build import build_one, builder_dirs  # noqa: E402
 

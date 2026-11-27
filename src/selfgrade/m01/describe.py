@@ -117,7 +117,7 @@ def _real() -> dict:
     orders, items, customers = load_olist("orders"), load_olist("items"), load_olist("customers")
     r: dict = {}
     st = orders["order_status"]
-    r["share_delivered"] = float(st.eq("delivered").mean())
+    r["share_canceled_all"] = float(st.eq("canceled").mean())
     r["share_canceled_undelivered"] = float(st[st.ne("delivered")].eq("canceled").mean())
 
     tot = items.groupby("order_id")["price"].sum()
@@ -213,12 +213,15 @@ def _(freq_table):
 
 @S.exercise("status-shares", "two shares, two denominators", hints=[
     "`mask.mean()` is the share of True values among the rows of the mask's table.",
+    "Both shares use the same condition, status == 'canceled'. What changes is which rows you take the mean over.",
     "For the second share, first restrict to the orders that are not delivered, then take the share that are canceled.",
 ])
-def _(share_delivered, share_canceled_of_undelivered):
+def _(share_canceled_of_all, share_canceled_of_undelivered):
     r = _real()
-    expect_close(share_delivered, r["share_delivered"], "share_delivered", tol=1e-6)
-    if abs(float(share_canceled_of_undelivered) - 625 / 99441) < 1e-6:
+    if abs(float(share_canceled_of_all) - r["share_canceled_undelivered"]) < 1e-6:
+        expect(False, "share_canceled_of_all used only the non-delivered orders as the denominator. Divide by all orders.")
+    expect_close(share_canceled_of_all, r["share_canceled_all"], "share_canceled_of_all", tol=1e-6)
+    if abs(float(share_canceled_of_undelivered) - r["share_canceled_all"]) < 1e-6:
         expect(False, "share_canceled_of_undelivered uses all orders as the denominator. Restrict to non-delivered orders first.")
     expect_close(share_canceled_of_undelivered, r["share_canceled_undelivered"], "share_canceled_of_undelivered", tol=1e-6)
     return ("0.6 % of all orders but 21 % of the undelivered ones: the same 625 cancellations, two very different "

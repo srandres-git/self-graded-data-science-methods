@@ -113,7 +113,7 @@ d = delivery_days(orders)
 
 G.S.verify_reference({
     "freq-table": G.check("freq-table", freq_table),
-    "status-shares": G.check("status-shares", st.eq("delivered").mean(), st[st.ne("delivered")].eq("canceled").mean()),
+    "status-shares": G.check("status-shares", st.eq("canceled").mean(),st[st.ne("delivered")].eq("canceled").mean()),
     "quantile-linear": G.check("quantile-linear", quantile_linear),
     "spread-summary": G.check("spread-summary", spread_summary),
     "order-value-spread": G.check("order-value-spread", spread_summary(order_table["items_value"])),

@@ -29,6 +29,8 @@ nb.md(r"""
 The same Olist tables as in Notebook 01. The cell also rebuilds a small **order-level table**, one row per order, with the item totals aggregated *before* the join (Notebook 01). The 775 orders with no item rows get a missing `items_value`, not a zero.
 """)
 nb.code(r"""
+from collections.abc import Sequence
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -101,16 +103,20 @@ nb.code(r"""
 freq_table(orders["order_status"]).round(4)
 """)
 nb.md(r"""
-✍️ **1.3** Same cancellations, two denominators. Compute:
-- `share_delivered`: the share of **all** orders with status `delivered`
+✍️ **1.3** Same cancellations, two denominators. Both shares count the **same** orders, the ones with status `canceled`; only the population you divide by changes. Compute:
+- `share_canceled_of_all`: among **all** orders, the share with status `canceled`
 - `share_canceled_of_undelivered`: among orders that are **not** delivered, the share with status `canceled`
 """)
 nb.learner("status-shares", r"""
-share_delivered = ...
+share_canceled_of_all = ...
 share_canceled_of_undelivered = ...
 
-check("status-shares", share_delivered, share_canceled_of_undelivered)
+check("status-shares", share_canceled_of_all, share_canceled_of_undelivered)
 """)
+nb.md(r"""
+💬 **1.4** An operations manager asks: *"When an order doesn't reach the customer, how often is it because it was canceled?"* Which of the two shares answers that question, and what would the other one answer instead?
+""")
+nb.answer("status-shares-which")
 
 # ---------------------------------------------------------------------------
 nb.md(r"""
@@ -178,7 +184,8 @@ nb.md(r"""
 ✍️ **2.2** Implement `quantile_linear(x, p)` with the interpolation rule above. Don't use `np.quantile` or `Series.quantile`. It should accept any 1-D sequence (unsorted, possibly with missing values, which it ignores) and $0\le p\le1$. The check compares it with pandas on edge cases: $n=1$, $p\in\{0,1\}$, ties, and an unsorted input.
 """)
 nb.learner("quantile-linear", r"""
-def quantile_linear(x, p: float) -> float:
+def quantile_linear(x: Sequence[float], p: float) -> float:
+    \"\"\"p-th quantile of the non-missing values of x, by linear interpolation; 0 <= p <= 1.\"\"\"
     # your code here
     raise NotImplementedError
 
@@ -251,7 +258,8 @@ $$g_1=\frac{m_3}{m_2^{3/2}},\qquad G_1=\frac{\sqrt{n(n-1)}}{n-2}\;g_1 .$$
 ★ **3.1** Implement `skewness(x)` from the formula for $G_1$. Ignore missing values. The check compares it with pandas.
 """)
 nb.learner("skewness", r"""
-def skewness(x) -> float:
+def skewness(x: pd.Series) -> float:
+    \"\"\"Adjusted Fisher–Pearson skewness G1 of the non-missing values (what Series.skew() reports).\"\"\"
     # your code here
     raise NotImplementedError
 
@@ -305,7 +313,8 @@ nb.md(r"""
 ★ **4.2** Write `fd_width(x)` (the Freedman–Diaconis width, ignoring missing values). Then compute `fd_bins_price`, the number of bins it implies for `items["price"]`: $\lceil(\max-\min)/h\rceil$.
 """)
 nb.learner("fd-bins", r"""
-def fd_width(x) -> float:
+def fd_width(x: pd.Series) -> float:
+    \"\"\"Freedman–Diaconis bin width 2·IQR·n^(-1/3) of the non-missing values.\"\"\"
     # your code here
     raise NotImplementedError
 
@@ -364,7 +373,8 @@ nb.md(r"""
 ✍️ **4.5** Write `ecdf(x)`. It returns two arrays `(xs, ys)`: the **distinct** non-missing values in increasing order, and $\hat F$ at each of them. Missing values are excluded from $n$.
 """)
 nb.learner("ecdf", r"""
-def ecdf(x):
+def ecdf(x: pd.Series) -> tuple[np.ndarray, np.ndarray]:
+    \"\"\"(xs, ys): the distinct non-missing values in increasing order, and F̂ at each one.\"\"\"
     # your code here
     raise NotImplementedError
 
@@ -419,7 +429,8 @@ It's a *diagnostic*: with 100,000 points, every real variable "fails" a strict n
 ★ **4.6** Write `qq_points(x)`. It returns `(theoretical, sample)` arrays: $\Phi^{-1}(p_i)$ with $p_i=(i-0.5)/n$, and the sorted non-missing values. (`scipy.stats.norm.ppf` is $\Phi^{-1}$.)
 """)
 nb.learner("qq-points", r"""
-def qq_points(x):
+def qq_points(x: pd.Series) -> tuple[np.ndarray, np.ndarray]:
+    \"\"\"(theoretical, sample): normal quantiles at p_i = (i - 0.5)/n, and the sorted non-missing values.\"\"\"
     # your code here
     raise NotImplementedError
 
